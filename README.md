@@ -33,9 +33,9 @@ toward GCP: the certs, the projects, the gaps I'm filling in.
 | Data Quality Framework | Planned | Automated checks with Great Expectations |
 
 ## Certifications
-- GCP Associate Cloud Engineer — in progress
+- GCP Associate Cloud Engineer — Completed (April 2026)
 - GCP Professional Data Engineer — next
 
 ## Find Me
-- LinkedIn: www.linkedin.com/in/raviteja-bhandaru-b2b735217
+- LinkedIn: www.linkedin.com/in/raviteja-bhandaru-de
 - Email: ravitejabh9790@gmail.com
