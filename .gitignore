@@ -1,0 +1,15 @@
+# GCP Service Account Key — NEVER commit this
+pipeline-sa-key.json
+*.json.key
+
+# Terraform sensitive files
+terraform/.tfvars
+*.tfstate
+*.tfstate.backup
+.terraform/
+
+# Python
+__pycache__/
+*.pyc
+.env
+venv/
