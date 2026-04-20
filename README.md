@@ -29,12 +29,12 @@ toward GCP: the certs, the projects, the gaps I'm filling in.
 ## Projects
 | Project | Status | Description |
 |---|---|---|
-| Real-time Reddit Sentiment Pipeline | In Progress | Pub/Sub → Dataflow → BigQuery |
+| Real-time Catastrophe Risk Intelligence Pipeline | In Progress | Pub/Sub → Dataflow → BigQuery |
 | Data Quality Framework | Planned | Automated checks with Great Expectations |
 
 ## Certifications
 - GCP Associate Cloud Engineer — Completed (April 2026)
-- GCP Professional Data Engineer — next
+- GCP Professional Data Engineer — In progress
 
 ## Find Me
 - LinkedIn: www.linkedin.com/in/raviteja-bhandaru-de
