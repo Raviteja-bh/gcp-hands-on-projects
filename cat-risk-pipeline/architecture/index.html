@@ -4,180 +4,269 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Catastrophe Risk Pipeline - Architecture</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { 
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: #f5f5f5;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
             padding: 40px 20px;
         }
-        .container {
-            max-width: 1200px;
+        #root {
+            max-width: 1400px;
             margin: 0 auto;
-            background: white;
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-        h1 {
-            color: #1a1a1a;
-            margin-bottom: 8px;
-            font-size: 32px;
-        }
-        .subtitle {
-            color: #666;
-            margin-bottom: 32px;
-            font-size: 16px;
-        }
-        .diagram {
-            background: white;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            padding: 32px;
-            margin-bottom: 32px;
-        }
-        .tech-stack {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 16px;
-            margin-top: 32px;
-        }
-        .tech-item {
-            padding: 16px;
-            background: #f8f9fa;
-            border-radius: 8px;
-            border-left: 4px solid #4285f4;
-        }
-        .tech-item h3 {
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 4px;
-        }
-        .tech-item p {
-            font-size: 16px;
-            color: #1a1a1a;
-            font-weight: 500;
-        }
-        .footer {
-            text-align: center;
-            color: #666;
-            font-size: 14px;
-            margin-top: 32px;
-        }
-        .footer a {
-            color: #4285f4;
-            text-decoration: none;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>🌪️ Catastrophe Risk Intelligence Pipeline</h1>
-        <p class="subtitle">Real-time streaming data pipeline on Google Cloud Platform</p>
-        
-        <div class="diagram">
-            <svg width="100%" viewBox="0 0 680 520">
-                <defs>
-                    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                        <path d="M2 1L8 5L2 9" fill="none" stroke="#666" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                    </marker>
-                </defs>
-                
-                <!-- APIs Layer -->
-                <rect x="40" y="20" width="180" height="60" rx="8" fill="#e8f0fe" stroke="#4285f4" stroke-width="1"/>
-                <text x="130" y="45" text-anchor="middle" font-size="14" font-weight="500" fill="#1a73e8">Public APIs</text>
-                <text x="130" y="65" text-anchor="middle" font-size="12" fill="#5f6368">NOAA · USGS · FEMA</text>
-                
-                <rect x="260" y="20" width="180" height="60" rx="8" fill="#e8f0fe" stroke="#4285f4" stroke-width="1"/>
-                <text x="350" y="45" text-anchor="middle" font-size="14" font-weight="500" fill="#1a73e8">Cloud Functions</text>
-                <text x="350" y="65" text-anchor="middle" font-size="12" fill="#5f6368">Data Ingestion</text>
-                
-                <rect x="480" y="20" width="160" height="60" rx="8" fill="#e8f0fe" stroke="#4285f4" stroke-width="1"/>
-                <text x="560" y="45" text-anchor="middle" font-size="14" font-weight="500" fill="#1a73e8">Cloud Scheduler</text>
-                <text x="560" y="65" text-anchor="middle" font-size="12" fill="#5f6368">Every 15 mins</text>
-                
-                <!-- Arrows Layer 1 -->
-                <line x1="220" y1="50" x2="258" y2="50" stroke="#666" stroke-width="2" marker-end="url(#arrow)"/>
-                <line x1="440" y1="50" x2="478" y2="50" stroke="#666" stroke-width="2" marker-end="url(#arrow)"/>
-                <line x1="560" y1="80" x2="560" y2="108" stroke="#666" stroke-width="2" marker-end="url(#arrow)" stroke-dasharray="4 2"/>
-                <line x1="560" y1="108" x2="350" y2="108" stroke="#666" stroke-width="2" marker-end="url(#arrow)" stroke-dasharray="4 2"/>
-                <line x1="350" y1="108" x2="350" y2="80" stroke="#666" stroke-width="2" marker-end="url(#arrow)" stroke-dasharray="4 2"/>
-                
-                <!-- Pub/Sub -->
-                <rect x="240" y="140" width="220" height="60" rx="8" fill="#fef7e0" stroke="#f9ab00" stroke-width="1"/>
-                <text x="350" y="165" text-anchor="middle" font-size="14" font-weight="500" fill="#e37400">Cloud Pub/Sub</text>
-                <text x="350" y="185" text-anchor="middle" font-size="12" fill="#5f6368">Message Streaming</text>
-                
-                <line x1="350" y1="80" x2="350" y2="138" stroke="#666" stroke-width="2" marker-end="url(#arrow)"/>
-                
-                <!-- Dataflow -->
-                <rect x="240" y="240" width="220" height="60" rx="8" fill="#e6f4ea" stroke="#34a853" stroke-width="1"/>
-                <text x="350" y="265" text-anchor="middle" font-size="14" font-weight="500" fill="#188038">Cloud Dataflow</text>
-                <text x="350" y="285" text-anchor="middle" font-size="12" fill="#5f6368">Apache Beam Pipeline</text>
-                
-                <line x1="350" y1="200" x2="350" y2="238" stroke="#666" stroke-width="2" marker-end="url(#arrow)"/>
-                
-                <!-- BigQuery -->
-                <rect x="240" y="340" width="220" height="60" rx="8" fill="#e8f0fe" stroke="#4285f4" stroke-width="1"/>
-                <text x="350" y="365" text-anchor="middle" font-size="14" font-weight="500" fill="#1a73e8">BigQuery</text>
-                <text x="350" y="385" text-anchor="middle" font-size="12" fill="#5f6368">Partitioned & Clustered</text>
-                
-                <line x1="350" y1="300" x2="350" y2="338" stroke="#666" stroke-width="2" marker-end="url(#arrow)"/>
-                
-                <!-- Looker Studio -->
-                <rect x="240" y="440" width="220" height="60" rx="8" fill="#fce8e6" stroke="#ea4335" stroke-width="1"/>
-                <text x="350" y="465" text-anchor="middle" font-size="14" font-weight="500" fill="#c5221f">Looker Studio</text>
-                <text x="350" y="485" text-anchor="middle" font-size="12" fill="#5f6368">Live Dashboard</text>
-                
-                <line x1="350" y1="400" x2="350" y2="438" stroke="#666" stroke-width="2" marker-end="url(#arrow)"/>
-                
-                <!-- Cloud Composer Side -->
-                <rect x="30" y="240" width="160" height="140" rx="8" fill="#f3e8fd" stroke="#a142f4" stroke-width="1" stroke-dasharray="4 2"/>
-                <text x="110" y="265" text-anchor="middle" font-size="14" font-weight="500" fill="#7627bb">Cloud Composer</text>
-                <text x="110" y="285" text-anchor="middle" font-size="12" fill="#5f6368">Orchestration</text>
-                <text x="110" y="310" text-anchor="middle" font-size="11" fill="#5f6368">• Schedule</text>
-                <text x="110" y="330" text-anchor="middle" font-size="11" fill="#5f6368">• Monitor</text>
-                <text x="110" y="350" text-anchor="middle" font-size="11" fill="#5f6368">• Retry</text>
-                <text x="110" y="370" text-anchor="middle" font-size="11" fill="#5f6368">• Alert</text>
-                
-                <!-- Terraform Side -->
-                <rect x="490" y="340" width="150" height="80" rx="8" fill="#e8eaed" stroke="#5f6368" stroke-width="1" stroke-dasharray="4 2"/>
-                <text x="565" y="365" text-anchor="middle" font-size="14" font-weight="500" fill="#3c4043">Terraform</text>
-                <text x="565" y="385" text-anchor="middle" font-size="12" fill="#5f6368">Infrastructure</text>
-                <text x="565" y="405" text-anchor="middle" font-size="12" fill="#5f6368">as Code</text>
-            </svg>
-        </div>
-        
-        <div class="tech-stack">
-            <div class="tech-item">
-                <h3>INGESTION</h3>
-                <p>Cloud Functions</p>
-            </div>
-            <div class="tech-item">
-                <h3>STREAMING</h3>
-                <p>Pub/Sub</p>
-            </div>
-            <div class="tech-item">
-                <h3>PROCESSING</h3>
-                <p>Dataflow + Beam</p>
-            </div>
-            <div class="tech-item">
-                <h3>STORAGE</h3>
-                <p>BigQuery</p>
-            </div>
-            <div class="tech-item">
-                <h3>ORCHESTRATION</h3>
-                <p>Cloud Composer</p>
-            </div>
-            <div class="tech-item">
-                <h3>INFRASTRUCTURE</h3>
-                <p>Terraform</p>
-            </div>
-        </div>
-        
-        <div class="footer">
-            <p>View source code on <a href="https://github.com/YOUR-USERNAME/gcp-hands-on-projects" target="_blank">GitHub</a></p>
-        </div>
-    </div>
+    <div id="root"></div>
+    
+    <script type="text/babel">
+        const { useState } = React;
+
+        function ArchitectureDiagram() {
+            const [selectedNode, setSelectedNode] = useState(null);
+
+            const nodeDetails = {
+                apis: {
+                    title: "Public APIs",
+                    description: "Real-time catastrophe data from NOAA (weather alerts), USGS (earthquakes M2.5+), and FEMA (disaster declarations)",
+                    tech: "REST APIs"
+                },
+                functions: {
+                    title: "Cloud Functions",
+                    description: "Serverless Python functions triggered every 15 minutes to fetch data from all three APIs, normalize to standard format, and publish to Pub/Sub",
+                    tech: "Python 3.9, requests library"
+                },
+                scheduler: {
+                    title: "Cloud Scheduler",
+                    description: "Cron-based scheduler triggering Cloud Functions every 15 minutes (*/15 * * * *) with automatic retries on failure",
+                    tech: "Google Cloud Scheduler"
+                },
+                pubsub: {
+                    title: "Cloud Pub/Sub",
+                    description: "Message streaming buffer with 7-day retention, decoupling ingestion from processing. At-least-once delivery guarantee ensures no data loss",
+                    tech: "Google Cloud Pub/Sub"
+                },
+                dataflow: {
+                    title: "Cloud Dataflow",
+                    description: "Apache Beam pipeline with windowing (15-min fixed windows), event-time processing, data validation, risk score enrichment, and BigQuery writes",
+                    tech: "Apache Beam (Python), auto-scaling workers"
+                },
+                bigquery: {
+                    title: "BigQuery",
+                    description: "Partitioned by day (reduces query costs 365x), clustered by source/event_type/severity for fast filtering. Schema includes risk_score calculation",
+                    tech: "BigQuery, 12 columns, streaming inserts"
+                },
+                looker: {
+                    title: "Looker Studio",
+                    description: "Live dashboard with auto-refresh every 15 minutes showing top risk regions, event trends, severity breakdown, and volume metrics",
+                    tech: "Looker Studio (formerly Data Studio)"
+                },
+                composer: {
+                    title: "Cloud Composer",
+                    description: "Airflow DAG orchestrating pipeline health checks, triggering ingestion, monitoring Pub/Sub, starting Dataflow jobs, and verifying BigQuery data",
+                    tech: "Apache Airflow 2.x"
+                },
+                terraform: {
+                    title: "Terraform",
+                    description: "Infrastructure as Code defining all 18 GCP resources. One command deployment (terraform apply) and teardown (terraform destroy)",
+                    tech: "Terraform, 3 files (main, variables, outputs)"
+                },
+                cicd: {
+                    title: "GitHub Actions",
+                    description: "CI/CD pipeline running tests on every push, deploying to GCP on merge to main. Automated pytest, flake8 linting, and gcloud deployments",
+                    tech: "GitHub Actions, 2 workflows"
+                }
+            };
+
+            const Node = ({ id, title, subtitle, color, x, y, width, height, onClick }) => (
+                <g onClick={() => onClick(id)} style={{ cursor: 'pointer' }}>
+                    <rect
+                        x={x}
+                        y={y}
+                        width={width}
+                        height={height}
+                        rx="12"
+                        fill={color}
+                        stroke={selectedNode === id ? "#fff" : "rgba(255,255,255,0.3)"}
+                        strokeWidth={selectedNode === id ? "3" : "1.5"}
+                        style={{ transition: 'all 0.3s' }}
+                    />
+                    <text
+                        x={x + width / 2}
+                        y={y + height / 2 - 8}
+                        textAnchor="middle"
+                        fill="white"
+                        fontSize="16"
+                        fontWeight="600"
+                    >
+                        {title}
+                    </text>
+                    <text
+                        x={x + width / 2}
+                        y={y + height / 2 + 12}
+                        textAnchor="middle"
+                        fill="rgba(255,255,255,0.8)"
+                        fontSize="13"
+                    >
+                        {subtitle}
+                    </text>
+                </g>
+            );
+
+            const Arrow = ({ x1, y1, x2, y2, dashed }) => (
+                <g>
+                    <defs>
+                        <marker
+                            id="arrowhead"
+                            markerWidth="10"
+                            markerHeight="10"
+                            refX="9"
+                            refY="3"
+                            orient="auto"
+                        >
+                            <polygon points="0 0, 10 3, 0 6" fill="rgba(255,255,255,0.7)" />
+                        </marker>
+                    </defs>
+                    <line
+                        x1={x1}
+                        y1={y1}
+                        x2={x2}
+                        y2={y2}
+                        stroke="rgba(255,255,255,0.7)"
+                        strokeWidth="2"
+                        strokeDasharray={dashed ? "6 4" : "0"}
+                        markerEnd="url(#arrowhead)"
+                    />
+                </g>
+            );
+
+            return (
+                <div>
+                    <div style={{
+                        background: 'white',
+                        borderRadius: '16px',
+                        padding: '40px',
+                        marginBottom: '24px',
+                        boxShadow: '0 20px 60px rgba(0,0,0,0.3)'
+                    }}>
+                        <h1 style={{ fontSize: '36px', marginBottom: '8px', color: '#1a1a1a' }}>
+                            🌪️ Catastrophe Risk Intelligence Pipeline
+                        </h1>
+                        <p style={{ fontSize: '18px', color: '#666', marginBottom: '32px' }}>
+                            Real-time streaming data architecture on Google Cloud Platform
+                        </p>
+
+                        <svg width="100%" viewBox="0 0 1200 800" style={{ background: 'transparent' }}>
+                            {/* APIs Layer */}
+                            <Node id="apis" title="Public APIs" subtitle="NOAA · USGS · FEMA" color="#4285f4" x={50} y={50} width={200} height={80} onClick={setSelectedNode} />
+                            <Node id="functions" title="Cloud Functions" subtitle="Data Ingestion" color="#4285f4" x={320} y={50} width={220} height={80} onClick={setSelectedNode} />
+                            <Node id="scheduler" title="Cloud Scheduler" subtitle="Every 15 mins" color="#34a853" x={610} y={50} width={200} height={80} onClick={setSelectedNode} />
+
+                            {/* Arrows Row 1 */}
+                            <Arrow x1={250} y1={90} x2={318} y2={90} />
+                            <Arrow x1={540} y1={90} x2={608} y2={90} />
+                            <Arrow x1={710} y1={130} x2={710} y2={180} />
+                            <Arrow x1={710} y1={180} x2={430} y2={180} />
+                            <Arrow x1={430} y1={180} x2={430} y2={132} dashed={true} />
+
+                            {/* Pub/Sub */}
+                            <Node id="pubsub" title="Cloud Pub/Sub" subtitle="Message Streaming" color="#fbbc04" x={320} y={220} width={220} height={80} onClick={setSelectedNode} />
+                            <Arrow x1={430} y1={130} x2={430} y2={218} />
+
+                            {/* Dataflow */}
+                            <Node id="dataflow" title="Cloud Dataflow" subtitle="Apache Beam Pipeline" color="#34a853" x={320} y={360} width={220} height={80} onClick={setSelectedNode} />
+                            <Arrow x1={430} y1={300} x2={430} y2={358} />
+
+                            {/* BigQuery */}
+                            <Node id="bigquery" title="BigQuery" subtitle="Partitioned & Clustered" color="#4285f4" x={320} y={500} width={220} height={80} onClick={setSelectedNode} />
+                            <Arrow x1={430} y1={440} x2={430} y2={498} />
+
+                            {/* Looker Studio */}
+                            <Node id="looker" title="Looker Studio" subtitle="Live Dashboard" color="#ea4335" x={320} y={640} width={220} height={80} onClick={setSelectedNode} />
+                            <Arrow x1={430} y1={580} x2={430} y2={638} />
+
+                            {/* Side: Cloud Composer */}
+                            <rect x={50} y={360} width={200} height={180} rx="12" fill="rgba(156, 39, 176, 0.2)" stroke="#9c27b0" strokeWidth="2" strokeDasharray="6 4" />
+                            <Node id="composer" title="Cloud Composer" subtitle="Orchestration" color="#9c27b0" x={70} y={380} width={160} height={60} onClick={setSelectedNode} />
+                            <text x={150} y={470} textAnchor="middle" fill="white" fontSize="13">• Schedule</text>
+                            <text x={150} y={490} textAnchor="middle" fill="white" fontSize="13">• Monitor</text>
+                            <text x={150} y={510} textAnchor="middle" fill="white" fontSize="13">• Retry</text>
+
+                            {/* Side: Terraform */}
+                            <rect x={950} y={360} width={200} height={140} rx="12" fill="rgba(95, 99, 104, 0.2)" stroke="#5f6368" strokeWidth="2" strokeDasharray="6 4" />
+                            <Node id="terraform" title="Terraform" subtitle="Infrastructure as Code" color="#5f6368" x={970} y={380} width={160} height={60} onClick={setSelectedNode} />
+                            <text x={1050} y={470} textAnchor="middle" fill="white" fontSize="13">18 GCP Resources</text>
+
+                            {/* Side: CI/CD */}
+                            <rect x={950} y={540} width={200} height={140} rx="12" fill="rgba(36, 41, 46, 0.2)" stroke="#24292e" strokeWidth="2" strokeDasharray="6 4" />
+                            <Node id="cicd" title="GitHub Actions" subtitle="CI/CD Pipeline" color="#24292e" x={970} y={560} width={160} height={60} onClick={setSelectedNode} />
+                            <text x={1050} y={650} textAnchor="middle" fill="white" fontSize="13">Test → Deploy</text>
+                        </svg>
+                    </div>
+
+                    {selectedNode && (
+                        <div style={{
+                            background: 'white',
+                            borderRadius: '16px',
+                            padding: '32px',
+                            boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
+                            animation: 'slideIn 0.3s ease-out'
+                        }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '16px' }}>
+                                <h2 style={{ fontSize: '24px', color: '#1a1a1a' }}>
+                                    {nodeDetails[selectedNode].title}
+                                </h2>
+                                <button
+                                    onClick={() => setSelectedNode(null)}
+                                    style={{
+                                        background: 'none',
+                                        border: 'none',
+                                        fontSize: '24px',
+                                        cursor: 'pointer',
+                                        color: '#666'
+                                    }}
+                                >
+                                    ×
+                                </button>
+                            </div>
+                            <p style={{ fontSize: '16px', color: '#444', lineHeight: '1.6', marginBottom: '16px' }}>
+                                {nodeDetails[selectedNode].description}
+                            </p>
+                            <div style={{
+                                background: '#f5f5f5',
+                                padding: '12px 16px',
+                                borderRadius: '8px',
+                                display: 'inline-block'
+                            }}>
+                                <code style={{ color: '#666', fontSize: '14px' }}>
+                                    {nodeDetails[selectedNode].tech}
+                                </code>
+                            </div>
+                        </div>
+                    )}
+
+                    <style>{`
+                        @keyframes slideIn {
+                            from {
+                                opacity: 0;
+                                transform: translateY(20px);
+                            }
+                            to {
+                                opacity: 1;
+                                transform: translateY(0);
+                            }
+                        }
+                    `}</style>
+                </div>
+            );
+        }
+
+        ReactDOM.render(<ArchitectureDiagram />, document.getElementById('root'));
+    </script>
 </body>
 </html>
