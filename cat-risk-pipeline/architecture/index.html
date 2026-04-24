@@ -6,12 +6,12 @@
     <title>Catastrophe Risk Pipeline - Architecture</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 </head>
-<body>
+<body style="margin: 0;">
     <div id="root"></div>
     
     <script type="text/babel">
@@ -90,15 +90,6 @@
             col: 5,
             row: 0,
           },
-          {
-            id: "composer",
-            label: "Cloud Composer",
-            sublabel: "Pipeline Orchestration",
-            color: "#06b6d4",
-            icon: "🎼",
-            col: 5,
-            row: 2,
-          },
         ];
 
         const COL_W = 150;
@@ -106,7 +97,7 @@
         const NODE_W = 130;
         const NODE_H = 72;
         const PAD_X = 40;
-        const PAD_Y = 40;
+        const PAD_Y = 80;
 
         function getCenter(node) {
           return {
@@ -123,7 +114,6 @@
           { from: "pubsub", to: "dataflow" },
           { from: "dataflow", to: "bq" },
           { from: "bq", to: "looker" },
-          { from: "bq", to: "composer" },
         ];
 
         function Arrow({ from, to, animated, delay }) {
@@ -242,7 +232,7 @@
                 y={y + 57}
                 textAnchor="middle"
                 fill="#94a3b8"
-                fontSize="8.0"
+                fontSize="8.5"
                 fontFamily="'DM Mono', monospace"
               >
                 {node.sublabel}
@@ -259,7 +249,7 @@
           }, []);
 
           const svgW = PAD_X * 2 + 6 * COL_W;
-          const svgH = PAD_Y * 2 + 3 * ROW_H;
+          const svgH = PAD_Y * 2 + 3 * ROW_H + 40;
 
           return (
             <div
@@ -288,7 +278,7 @@
                   }}
                 >
                   <span style={{ color: "#38bdf8", fontSize: 11, letterSpacing: 2 }}>
-                    GCP Hands-on Project
+                    GCP DATA ENGINEERING PORTFOLIO
                   </span>
                 </div>
                 <h1
@@ -334,6 +324,33 @@
                       />
                     </filter>
                   </defs>
+
+                  {/* Cloud Composer orchestration container */}
+                  <rect
+                    x={PAD_X - 10}
+                    y={PAD_Y - 30}
+                    width={svgW - 2 * PAD_X + 20}
+                    height={3 * ROW_H + 30}
+                    rx="12"
+                    fill="none"
+                    stroke="#06b6d4"
+                    strokeWidth="2"
+                    strokeDasharray="8 6"
+                    opacity={visible ? 0.5 : 0}
+                    style={{ transition: "opacity 0.8s ease 1s" }}
+                  />
+                  <text
+                    x={PAD_X + 5}
+                    y={PAD_Y - 10}
+                    fill="#06b6d4"
+                    fontSize="11"
+                    fontWeight="600"
+                    fontFamily="'DM Mono', monospace"
+                    opacity={visible ? 0.9 : 0}
+                    style={{ transition: "opacity 0.8s ease 1s" }}
+                  >
+                    🎼 CLOUD COMPOSER ORCHESTRATION
+                  </text>
 
                   {edges.map((e, i) => (
                     <Arrow
