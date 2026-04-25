@@ -90,6 +90,15 @@
             col: 5,
             row: 0,
           },
+          {
+            id: "composer",
+            label: "Cloud Composer",
+            sublabel: "Pipeline Orchestration",
+            color: "#06b6d4",
+            icon: "🎼",
+            col: 5,
+            row: 2,
+          },
         ];
 
         const COL_W = 150;
@@ -97,7 +106,7 @@
         const NODE_W = 130;
         const NODE_H = 72;
         const PAD_X = 40;
-        const PAD_Y = 80;
+        const PAD_Y = 40;
 
         function getCenter(node) {
           return {
@@ -106,7 +115,8 @@
           };
         }
 
-        const edges = [
+        // Data flow edges (solid)
+        const dataEdges = [
           { from: "noaa", to: "cf" },
           { from: "usgs", to: "cf" },
           { from: "fema", to: "cf" },
@@ -116,7 +126,14 @@
           { from: "bq", to: "looker" },
         ];
 
-        function Arrow({ from, to, animated, delay }) {
+        // Orchestration edges (dashed)
+        const orchestrationEdges = [
+          { from: "composer", to: "cf" },
+          { from: "composer", to: "dataflow" },
+          { from: "composer", to: "bq" },
+        ];
+
+        function Arrow({ from, to, animated, delay, dashed }) {
           const f = getCenter(nodes.find((n) => n.id === from));
           const t = getCenter(nodes.find((n) => n.id === to));
 
@@ -132,6 +149,8 @@
           const endY = t.y - uy * (NODE_H / 2 + 10);
 
           const id = `arrow-${from}-${to}`;
+          const strokeColor = dashed ? "#06b6d4" : "#334155";
+          const strokeDasharray = dashed ? "6 4" : "4 3";
 
           return (
             <g>
@@ -144,7 +163,7 @@
                   refY="3"
                   orient="auto"
                 >
-                  <path d="M0,0 L0,6 L6,3 z" fill="#475569" />
+                  <path d="M0,0 L0,6 L6,3 z" fill={dashed ? "#06b6d4" : "#475569"} />
                 </marker>
                 <path
                   id={id}
@@ -157,12 +176,13 @@
                 y1={startY}
                 x2={endX}
                 y2={endY}
-                stroke="#334155"
-                strokeWidth="1.5"
+                stroke={strokeColor}
+                strokeWidth={dashed ? "2" : "1.5"}
                 markerEnd={`url(#head-${from}-${to})`}
-                strokeDasharray="4 3"
+                strokeDasharray={strokeDasharray}
+                opacity={dashed ? 0.6 : 1}
               />
-              {animated && (
+              {animated && !dashed && (
                 <circle r="3" fill="#38bdf8" opacity="0.9">
                   <animateMotion
                     dur="2s"
@@ -249,7 +269,7 @@
           }, []);
 
           const svgW = PAD_X * 2 + 6 * COL_W;
-          const svgH = PAD_Y * 2 + 3 * ROW_H + 40;
+          const svgH = PAD_Y * 2 + 3 * ROW_H;
 
           return (
             <div
@@ -325,43 +345,30 @@
                     </filter>
                   </defs>
 
-                  {/* Cloud Composer orchestration container */}
-                  <rect
-                    x={PAD_X - 10}
-                    y={PAD_Y - 30}
-                    width={svgW - 2 * PAD_X + 20}
-                    height={3 * ROW_H + 30}
-                    rx="12"
-                    fill="none"
-                    stroke="#06b6d4"
-                    strokeWidth="2"
-                    strokeDasharray="8 6"
-                    opacity={visible ? 0.5 : 0}
-                    style={{ transition: "opacity 0.8s ease 1s" }}
-                  />
-                  <text
-                    x={PAD_X + 5}
-                    y={PAD_Y - 10}
-                    fill="#06b6d4"
-                    fontSize="11"
-                    fontWeight="600"
-                    fontFamily="'DM Mono', monospace"
-                    opacity={visible ? 0.9 : 0}
-                    style={{ transition: "opacity 0.8s ease 1s" }}
-                  >
-                    🎼 CLOUD COMPOSER ORCHESTRATION
-                  </text>
-
-                  {edges.map((e, i) => (
+                  {/* Orchestration edges first (behind) */}
+                  {orchestrationEdges.map((e, i) => (
                     <Arrow
-                      key={i}
+                      key={`orch-${i}`}
+                      from={e.from}
+                      to={e.to}
+                      animated={false}
+                      dashed={true}
+                    />
+                  ))}
+
+                  {/* Data flow edges */}
+                  {dataEdges.map((e, i) => (
+                    <Arrow
+                      key={`data-${i}`}
                       from={e.from}
                       to={e.to}
                       animated={visible}
                       delay={i * 0.3}
+                      dashed={false}
                     />
                   ))}
 
+                  {/* Nodes on top */}
                   {nodes.map((node) => (
                     <Node key={node.id} node={node} visible={visible} />
                   ))}
