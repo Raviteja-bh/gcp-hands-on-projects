@@ -18,87 +18,15 @@
         const { useEffect, useState } = React;
 
         const nodes = [
-          {
-            id: "noaa",
-            label: "NOAA API",
-            sublabel: "Weather & Storms",
-            color: "#0ea5e9",
-            icon: "🌪️",
-            col: 0,
-            row: 0,
-          },
-          {
-            id: "usgs",
-            label: "USGS API",
-            sublabel: "Earthquakes",
-            color: "#0ea5e9",
-            icon: "🌍",
-            col: 0,
-            row: 1,
-          },
-          {
-            id: "fema",
-            label: "FEMA API",
-            sublabel: "Disaster Declarations",
-            color: "#0ea5e9",
-            icon: "🚨",
-            col: 0,
-            row: 2,
-          },
-          {
-            id: "cf",
-            label: "Cloud Functions",
-            sublabel: "Ingest every 15 mins",
-            color: "#f59e0b",
-            icon: "⚡",
-            col: 1,
-            row: 1,
-          },
-          {
-            id: "pubsub",
-            label: "Pub/Sub",
-            sublabel: "Event Streaming",
-            color: "#8b5cf6",
-            icon: "📡",
-            col: 2,
-            row: 1,
-          },
-          {
-            id: "dataflow",
-            label: "Dataflow",
-            sublabel: "Apache Beam · Risk Scoring",
-            color: "#ec4899",
-            icon: "🔄",
-            col: 3,
-            row: 1,
-          },
-          {
-            id: "bq",
-            label: "BigQuery",
-            sublabel: "Partitioned by Region",
-            color: "#10b981",
-            icon: "🗄️",
-            col: 4,
-            row: 1,
-          },
-          {
-            id: "looker",
-            label: "Looker Studio",
-            sublabel: "Live Risk Dashboard",
-            color: "#f97316",
-            icon: "📊",
-            col: 5,
-            row: 0,
-          },
-          {
-            id: "composer",
-            label: "Cloud Composer",
-            sublabel: "Pipeline Orchestration",
-            color: "#06b6d4",
-            icon: "🎼",
-            col: 5,
-            row: 2,
-          },
+          { id: "noaa", label: "NOAA API", sublabel: "Weather & Storms", color: "#0ea5e9", icon: "🌪️", col: 0, row: 0 },
+          { id: "usgs", label: "USGS API", sublabel: "Earthquakes", color: "#0ea5e9", icon: "🌍", col: 0, row: 1 },
+          { id: "fema", label: "FEMA API", sublabel: "Disaster Declarations", color: "#0ea5e9", icon: "🚨", col: 0, row: 2 },
+          { id: "cf", label: "Cloud Functions", sublabel: "Ingest every 15 mins", color: "#f59e0b", icon: "⚡", col: 1, row: 1 },
+          { id: "pubsub", label: "Pub/Sub", sublabel: "Event Streaming", color: "#8b5cf6", icon: "📡", col: 2, row: 1 },
+          { id: "dataflow", label: "Dataflow", sublabel: "Apache Beam · Risk Scoring", color: "#ec4899", icon: "🔄", col: 3, row: 1 },
+          { id: "bq", label: "BigQuery", sublabel: "Partitioned by Region", color: "#10b981", icon: "🗄️", col: 4, row: 1 },
+          { id: "looker", label: "Looker Studio", sublabel: "Live Risk Dashboard", color: "#f97316", icon: "📊", col: 5, row: 0 },
+          { id: "composer", label: "Cloud Composer", sublabel: "Pipeline Orchestration", color: "#06b6d4", icon: "🎼", col: 5, row: 2 },
         ];
 
         const COL_W = 150;
@@ -115,7 +43,6 @@
           };
         }
 
-        // Data flow edges (solid)
         const dataEdges = [
           { from: "noaa", to: "cf" },
           { from: "usgs", to: "cf" },
@@ -126,7 +53,6 @@
           { from: "bq", to: "looker" },
         ];
 
-        // Orchestration edges (dashed)
         const orchestrationEdges = [
           { from: "composer", to: "cf" },
           { from: "composer", to: "dataflow" },
@@ -136,61 +62,51 @@
         function Arrow({ from, to, animated, delay, dashed }) {
           const f = getCenter(nodes.find((n) => n.id === from));
           const t = getCenter(nodes.find((n) => n.id === to));
-
-          const dx = t.x - f.x;
-          const dy = t.y - f.y;
-          const len = Math.sqrt(dx * dx + dy * dy);
-          const ux = dx / len;
-          const uy = dy / len;
-
-          const startX = f.x + ux * (NODE_W / 2 + 2);
-          const startY = f.y + uy * (NODE_H / 2 + 2);
-          const endX = t.x - ux * (NODE_W / 2 + 10);
-          const endY = t.y - uy * (NODE_H / 2 + 10);
-
           const id = `arrow-${from}-${to}`;
-          const strokeColor = dashed ? "#06b6d4" : "#334155";
+          const strokeColor = dashed ? "#06b6d4" : "#475569";
           const strokeDasharray = dashed ? "6 4" : "4 3";
+
+          let pathD;
+
+          if (dashed) {
+            // "TRUNK" ROUTING: DOWN -> LEFT -> UP
+            // 1. Exit from bottom of Composer
+            const startX = f.x;
+            const startY = f.y + NODE_H / 2;
+            
+            // 2. Drop down to a "trunk" line (shared Y-axis below the nodes)
+            const trunkY = PAD_Y + (2 * ROW_H) + NODE_H + 25; 
+            
+            // 3. Move horizontally to the target's X, then up to its bottom
+            const targetX = t.x;
+            const targetY = t.y + NODE_H / 2 + 8; // Stop just below the target node
+
+            pathD = `M ${startX},${startY} V ${trunkY} H ${targetX} V ${targetY}`;
+          } else {
+            // DATA FLOW: Standard Straight/Diagonal
+            const dx = t.x - f.x;
+            const dy = t.y - f.y;
+            const len = Math.sqrt(dx * dx + dy * dy);
+            const ux = dx / len;
+            const uy = dy / len;
+            const startX = f.x + ux * (NODE_W / 2 + 2);
+            const startY = f.y + uy * (NODE_H / 2 + 2);
+            const endX = t.x - ux * (NODE_W / 2 + 10);
+            const endY = t.y - uy * (NODE_H / 2 + 10);
+            pathD = `M ${startX},${startY} L ${endX},${endY}`;
+          }
 
           return (
             <g>
               <defs>
-                <marker
-                  id={`head-${from}-${to}`}
-                  markerWidth="6"
-                  markerHeight="6"
-                  refX="3"
-                  refY="3"
-                  orient="auto"
-                >
+                <marker id={`head-${from}-${to}`} markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
                   <path d="M0,0 L0,6 L6,3 z" fill={dashed ? "#06b6d4" : "#475569"} />
                 </marker>
-                <path
-                  id={id}
-                  d={`M${startX},${startY} L${endX},${endY}`}
-                  fill="none"
-                />
               </defs>
-              <line
-                x1={startX}
-                y1={startY}
-                x2={endX}
-                y2={endY}
-                stroke={strokeColor}
-                strokeWidth={dashed ? "2" : "1.5"}
-                markerEnd={`url(#head-${from}-${to})`}
-                strokeDasharray={strokeDasharray}
-                opacity={dashed ? 0.6 : 1}
-              />
+              <path id={id} d={pathD} fill="none" stroke={strokeColor} strokeWidth={dashed ? "2" : "1.5"} markerEnd={`url(#head-${from}-${to})`} strokeDasharray={strokeDasharray} opacity={dashed ? 0.7 : 1} />
               {animated && !dashed && (
                 <circle r="3" fill="#38bdf8" opacity="0.9">
-                  <animateMotion
-                    dur="2s"
-                    repeatCount="indefinite"
-                    begin={`${delay}s`}
-                  >
-                    <mpath href={`#${id}`} />
-                  </animateMotion>
+                  <animateMotion dur="2.2s" repeatCount="indefinite" begin={`${delay}s`}><mpath href={`#${id}`} /></animateMotion>
                 </circle>
               )}
             </g>
@@ -200,172 +116,51 @@
         function Node({ node, visible }) {
           const x = PAD_X + node.col * COL_W;
           const y = PAD_Y + node.row * ROW_H;
-
           return (
-            <g
-              style={{
-                opacity: visible ? 1 : 0,
-                transition: `opacity 0.5s ease ${node.col * 0.15}s`,
-              }}
-            >
-              <rect
-                x={x}
-                y={y}
-                width={NODE_W}
-                height={NODE_H}
-                rx="10"
-                fill="#0f172a"
-                stroke={node.color}
-                strokeWidth="1.5"
-                filter="url(#shadow)"
-              />
-              <rect
-                x={x}
-                y={y}
-                width={NODE_W}
-                height="3"
-                rx="10"
-                fill={node.color}
-                opacity="0.9"
-              />
-              <text
-                x={x + NODE_W / 2}
-                y={y + 22}
-                textAnchor="middle"
-                fontSize="18"
-              >
-                {node.icon}
-              </text>
-              <text
-                x={x + NODE_W / 2}
-                y={y + 42}
-                textAnchor="middle"
-                fill="white"
-                fontSize="10.5"
-                fontWeight="600"
-                fontFamily="'DM Mono', monospace"
-              >
-                {node.label}
-              </text>
-              <text
-                x={x + NODE_W / 2}
-                y={y + 57}
-                textAnchor="middle"
-                fill="#94a3b8"
-                fontSize="8.5"
-                fontFamily="'DM Mono', monospace"
-              >
-                {node.sublabel}
-              </text>
+            <g style={{ opacity: visible ? 1 : 0, transition: `opacity 0.5s ease ${node.col * 0.15}s` }}>
+              <rect x={x} y={y} width={NODE_W} height={NODE_H} rx="10" fill="#0f172a" stroke={node.color} strokeWidth="1.5" filter="url(#shadow)" />
+              <rect x={x} y={y} width={NODE_W} height="3" rx="10" fill={node.color} opacity="0.9" />
+              <text x={x + NODE_W / 2} y={y + 22} textAnchor="middle" fontSize="18">{node.icon}</text>
+              <text x={x + NODE_W / 2} y={y + 42} textAnchor="middle" fill="white" fontSize="10.5" fontWeight="600" fontFamily="'DM Mono', monospace">{node.label}</text>
+              <text x={x + NODE_W / 2} y={y + 57} textAnchor="middle" fill="#94a3b8" fontSize="8.5" fontFamily="'DM Mono', monospace">{node.sublabel}</text>
             </g>
           );
         }
 
         function App() {
           const [visible, setVisible] = useState(false);
-
-          useEffect(() => {
-            setTimeout(() => setVisible(true), 100);
-          }, []);
+          useEffect(() => { setTimeout(() => setVisible(true), 100); }, []);
 
           const svgW = PAD_X * 2 + 6 * COL_W;
-          const svgH = PAD_Y * 2 + 3 * ROW_H;
+          // Increased SVG height to accommodate the bottom "trunk" line
+          const svgH = PAD_Y * 2 + 3 * ROW_H + 60; 
 
           return (
-            <div
-              style={{
-                background: "#020817",
-                minHeight: "100vh",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                fontFamily: "'DM Mono', monospace",
-                padding: "32px 16px",
-              }}
-            >
+            <div style={{ background: "#020817", minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", fontFamily: "'DM Mono', monospace", padding: "32px 16px" }}>
               <div style={{ marginBottom: 24, textAlign: "center" }}>
-                <div
-                  style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: 10,
-                    background: "#0f172a",
-                    border: "1px solid #1e3a5f",
-                    borderRadius: 999,
-                    padding: "6px 18px",
-                    marginBottom: 14,
-                  }}
-                >
-                  <span style={{ color: "#38bdf8", fontSize: 11, letterSpacing: 2 }}>
-                    GCP DATA ENGINEERING PORTFOLIO
-                  </span>
+                <div style={{ display: "inline-flex", alignItems: "center", gap: 10, background: "#0f172a", border: "1px solid #1e3a5f", borderRadius: 999, padding: "6px 18px", marginBottom: 14 }}>
+                  <span style={{ color: "#38bdf8", fontSize: 11, letterSpacing: 2 }}>GCP DATA ENGINEERING PORTFOLIO</span>
                 </div>
-                <h1
-                  style={{
-                    color: "white",
-                    fontSize: 22,
-                    fontWeight: 700,
-                    margin: 0,
-                    letterSpacing: -0.5,
-                  }}
-                >
-                  🌪️ Catastrophe Risk Intelligence Pipeline
-                </h1>
-                <p style={{ color: "#64748b", fontSize: 12, marginTop: 8 }}>
-                  Real-time catastrophe event ingestion → risk scoring → live dashboard
-                </p>
+                <h1 style={{ color: "white", fontSize: 22, fontWeight: 700, margin: 0, letterSpacing: -0.5 }}>🌪️ Catastrophe Risk Intelligence Pipeline</h1>
+                <p style={{ color: "#64748b", fontSize: 12, marginTop: 8 }}>Real-time catastrophe event ingestion → risk scoring → live dashboard</p>
               </div>
 
-              <div
-                style={{
-                  background: "#0a1628",
-                  border: "1px solid #1e293b",
-                  borderRadius: 16,
-                  padding: 24,
-                  overflowX: "auto",
-                  maxWidth: "100%",
-                }}
-              >
-                <svg
-                  width={svgW}
-                  height={svgH}
-                  viewBox={`0 0 ${svgW} ${svgH}`}
-                  style={{ display: "block" }}
-                >
+              <div style={{ background: "#0a1628", border: "1px solid #1e293b", borderRadius: 16, padding: 24, overflowX: "auto", maxWidth: "100%" }}>
+                <svg width={svgW} height={svgH} viewBox={`0 0 ${svgW} ${svgH}`} style={{ display: "block" }}>
                   <defs>
                     <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
-                      <feDropShadow
-                        dx="0"
-                        dy="2"
-                        stdDeviation="4"
-                        floodColor="#000"
-                        floodOpacity="0.5"
-                      />
+                      <feDropShadow dx="0" dy="2" stdDeviation="4" floodColor="#000" floodOpacity="0.5" />
                     </filter>
                   </defs>
 
-                  {/* Orchestration edges first (behind) */}
+                  {/* Orchestration edges */}
                   {orchestrationEdges.map((e, i) => (
-                    <Arrow
-                      key={`orch-${i}`}
-                      from={e.from}
-                      to={e.to}
-                      animated={false}
-                      dashed={true}
-                    />
+                    <Arrow key={`orch-${i}`} from={e.from} to={e.to} animated={false} dashed={true} />
                   ))}
 
                   {/* Data flow edges */}
                   {dataEdges.map((e, i) => (
-                    <Arrow
-                      key={`data-${i}`}
-                      from={e.from}
-                      to={e.to}
-                      animated={visible}
-                      delay={i * 0.3}
-                      dashed={false}
-                    />
+                    <Arrow key={`data-${i}`} from={e.from} to={e.to} animated={visible} delay={i * 0.3} dashed={false} />
                   ))}
 
                   {/* Nodes on top */}
@@ -375,15 +170,8 @@
                 </svg>
               </div>
 
-              <div
-                style={{
-                  marginTop: 24,
-                  display: "flex",
-                  gap: 16,
-                  flexWrap: "wrap",
-                  justifyContent: "center",
-                }}
-              >
+              {/* Legend & Stats */}
+              <div style={{ marginTop: 24, display: "flex", gap: 16, flexWrap: "wrap", justifyContent: "center" }}>
                 {[
                   { color: "#0ea5e9", label: "Data Sources" },
                   { color: "#f59e0b", label: "Ingestion" },
@@ -393,58 +181,9 @@
                   { color: "#f97316", label: "Visualization" },
                   { color: "#06b6d4", label: "Orchestration" },
                 ].map((item) => (
-                  <div
-                    key={item.label}
-                    style={{ display: "flex", alignItems: "center", gap: 6 }}
-                  >
-                    <div
-                      style={{
-                        width: 10,
-                        height: 10,
-                        borderRadius: "50%",
-                        background: item.color,
-                      }}
-                    />
+                  <div key={item.label} style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                    <div style={{ width: 10, height: 10, borderRadius: "50%", background: item.color }} />
                     <span style={{ color: "#94a3b8", fontSize: 11 }}>{item.label}</span>
-                  </div>
-                ))}
-              </div>
-
-              <div
-                style={{
-                  marginTop: 28,
-                  display: "grid",
-                  gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
-                  gap: 12,
-                  width: "100%",
-                  maxWidth: 760,
-                }}
-              >
-                {[
-                  { icon: "⚡", stat: "< 30s", label: "End-to-end latency" },
-                  { icon: "🌍", stat: "3 APIs", label: "Public data sources" },
-                  { icon: "📊", stat: "Live", label: "Looker Studio dashboard" },
-                  { icon: "🔄", stat: "15 min", label: "Ingestion frequency" },
-                ].map((s) => (
-                  <div
-                    key={s.label}
-                    style={{
-                      background: "#0f172a",
-                      border: "1px solid #1e293b",
-                      borderRadius: 10,
-                      padding: "14px 16px",
-                      textAlign: "center",
-                    }}
-                  >
-                    <div style={{ fontSize: 20, marginBottom: 4 }}>{s.icon}</div>
-                    <div
-                      style={{ color: "#38bdf8", fontSize: 18, fontWeight: 700 }}
-                    >
-                      {s.stat}
-                    </div>
-                    <div style={{ color: "#64748b", fontSize: 10, marginTop: 2 }}>
-                      {s.label}
-                    </div>
                   </div>
                 ))}
               </div>
@@ -452,7 +191,8 @@
           );
         }
 
-        ReactDOM.render(<App />, document.getElementById('root'));
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
     </script>
 </body>
 </html>
