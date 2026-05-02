@@ -1,0 +1,17 @@
+-- bigquery/queries/top_risk_regions.sql
+SELECT
+  location,
+  COUNT(*)                      AS event_count,
+  ROUND(AVG(risk_score), 2)     AS avg_risk_score,
+  MAX(risk_score)               AS max_risk_score,
+  STRING_AGG(DISTINCT source)   AS data_sources
+FROM
+  `cat-risk-pipeline-2026.cat_risk.events`
+WHERE
+  DATE(timestamp) = CURRENT_DATE()
+  AND risk_score IS NOT NULL
+GROUP BY
+  location
+ORDER BY
+  avg_risk_score DESC
+LIMIT 10;

@@ -1,0 +1,15 @@
+-- bigquery/queries/hourly_heatmap.sql
+SELECT
+  EXTRACT(HOUR FROM timestamp)  AS hour_of_day,
+  EXTRACT(DAYOFWEEK FROM timestamp) AS day_of_week,
+  COUNT(*)                      AS event_count,
+  ROUND(AVG(risk_score), 2)     AS avg_risk_score
+FROM
+  `cat-risk-pipeline-2026.cat_risk.events`
+WHERE
+  timestamp >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 30 DAY)
+GROUP BY
+  hour_of_day,
+  day_of_week
+ORDER BY
+  avg_risk_score DESC;

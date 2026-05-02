@@ -1,0 +1,17 @@
+-- bigquery/queries/recent_high_severity.sql
+SELECT
+  source,
+  event_type,
+  title,
+  location,
+  magnitude,
+  severity,
+  risk_score,
+  timestamp
+FROM
+  `cat-risk-pipeline-2026.cat_risk.events`
+WHERE
+  timestamp >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 HOUR)
+  AND severity IN ('high', 'extreme')
+ORDER BY
+  risk_score DESC;
