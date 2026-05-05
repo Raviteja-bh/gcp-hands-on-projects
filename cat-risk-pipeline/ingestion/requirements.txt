@@ -1,3 +1,4 @@
-requests==2.31.0
-google-cloud-pubsub==2.18.0
-pip install apache-beam[gcp] --break-system-packages
+functions-framework==3.*
+requests
+google-cloud-pubsub
+apache-beam[gcp]
