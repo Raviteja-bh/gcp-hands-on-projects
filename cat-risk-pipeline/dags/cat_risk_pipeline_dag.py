@@ -115,6 +115,7 @@ with DAG(
     # Trigger Dataflow streaming pipeline
     trigger_dataflow = BeamRunPythonPipelineOperator(  # ← CORRECT OPERATOR
         task_id="trigger_dataflow",
+        execution_timeout=timedelta(minutes=10),
         runner="DataflowRunner",  # ← Run on Dataflow (not local)
         py_file=f"{BUCKET}/pipeline/dataflow_pipeline.py",
         py_options=[],
@@ -125,7 +126,7 @@ with DAG(
             "staging_location": f"{BUCKET}/dataflow-staging",
             "streaming": True
         },
-        asynchronous=True,
+        retries=0,
         py_interpreter="python3",
         py_system_site_packages=False,
         dataflow_config=DataflowConfiguration(
