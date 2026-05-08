@@ -1,6 +1,7 @@
 """
 Test script to verify API connectivity and data retrieval
 """
+
 from datetime import datetime, timedelta, UTC
 import requests
 
@@ -26,16 +27,18 @@ def safe_api_call(url, params=None, timeout=30, retries=3):
 def test_usgs_earthquakes(days_back=7):
     """Test USGS earthquake API"""
     print("\n=== USGS Earthquakes ===")
-    
+
     url = "https://earthquake.usgs.gov/fdsnws/event/1/query"
     params = {
         "format": "geojson",
         "minmagnitude": 2.5,
-        "starttime": (datetime.now(UTC) - timedelta(days=days_back)).strftime("%Y-%m-%d"),
+        "starttime": (datetime.now(UTC) - timedelta(days=days_back)).strftime(
+            "%Y-%m-%d"
+        ),
         "endtime": datetime.now(UTC).strftime("%Y-%m-%d"),
-        "orderby": "time"
+        "orderby": "time",
     }
-    
+
     try:
         data = safe_api_call(url, params=params)
         if data and "features" in data:
@@ -55,10 +58,10 @@ def test_usgs_earthquakes(days_back=7):
 def test_noaa_alerts(state="FL"):
     """Test NOAA weather alerts API"""
     print("\n=== NOAA Alerts ===")
-    
+
     url = f"https://api.weather.gov/alerts/active"
     params = {"area": state}
-    
+
     try:
         data = safe_api_call(url, params=params)
         if data and "features" in data:
@@ -78,12 +81,12 @@ def test_noaa_alerts(state="FL"):
 def test_fema_disasters(days_back=30):
     """Test FEMA disaster declarations API"""
     print("\n=== FEMA Disasters ===")
-    
+
     url = "https://www.fema.gov/api/open/v2/DisasterDeclarationsSummaries"
     params = {
         "$filter": f"declarationDate gt '{(datetime.now(UTC) - timedelta(days=days_back)).strftime('%Y-%m-%d')}'"
     }
-    
+
     try:
         data = safe_api_call(url, params=params)
         if data and "DisasterDeclarationsSummaries" in data:
@@ -104,17 +107,17 @@ def test_fema_disasters(days_back=30):
 if __name__ == "__main__":
     print("Testing API Connectivity...")
     print("=" * 50)
-    
+
     usgs_ok = test_usgs_earthquakes(days_back=7)
     noaa_ok = test_noaa_alerts(state="FL")
     fema_ok = test_fema_disasters(days_back=30)
-    
+
     print("\n" + "=" * 50)
     print("Results:")
     print(f"USGS: {'✓' if usgs_ok else '✗'}")
     print(f"NOAA: {'✓' if noaa_ok else '✗'}")
     print(f"FEMA: {'✓' if fema_ok else '✗'}")
-    
+
     if usgs_ok and noaa_ok and fema_ok:
         print("\n✓ All APIs responding correctly!")
     else:

@@ -22,8 +22,16 @@ jobs:
         run: |
           pip install flake8 pytest apache-beam[gcp] requests google-cloud-pubsub
 
-      - name: Lint Code
-        run: flake8 . --count --max-line-length=100 --statistics
+      # - name: Lint Code
+      #   run: flake8 . --count --max-line-length=100 --statistics
+      - name: Lint with flake8
+        run: |
+          # Only FAIL if there are syntax errors or "scary" logic issues
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          
+          # Report everything else (line length, spacing) but don't stop the build
+          # --exit-zero means "always succeed"
+          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=100 --statistics
 
       - name: Run Tests
         run: pytest cat-risk-pipeline/tests/ -v

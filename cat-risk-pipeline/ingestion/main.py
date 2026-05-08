@@ -5,12 +5,13 @@ from datetime import datetime, timedelta, timezone
 from google.cloud import pubsub_v1
 
 
-#config
+# config
 PROJECT_ID = "cat-risk-pipeline-2026"
 TOPIC_ID = "cat-risk-raw-events"
 
 
-#PUB/SUB PUBLISHER FUNCTION
+# PUB/SUB PUBLISHER FUNCTION
+
 
 def publish_event(publisher, topic_path, event):
     """
@@ -27,16 +28,11 @@ def publish_event(publisher, topic_path, event):
 def safe_api_call(url, params=None, headers=None, retries=3):
     for attempt in range(retries):
         try:
-            response = requests.get(
-                url,
-                params=params,
-                headers=headers,
-                timeout=30
-            )
+            response = requests.get(url, params=params, headers=headers, timeout=30)
             if response.status_code == 200:
                 return response.json()
             elif response.status_code == 429:
-                time.sleep(2 ** attempt)
+                time.sleep(2**attempt)
             else:
                 print(f"Error {response.status_code} from {url}")
                 return None
@@ -49,16 +45,19 @@ def safe_api_call(url, params=None, headers=None, retries=3):
 
 # Fetch functions for each data source, normalizing to a common event format
 
+
 def fetch_earthquakes():
     data = safe_api_call(
         url="https://earthquake.usgs.gov/fdsnws/event/1/query",
         params={
             "format": "geojson",
-            "starttime": (datetime.now(timezone.utc) - timedelta(hours=1)).strftime("%Y-%m-%dT%H:%M:%S"),
+            "starttime": (datetime.now(timezone.utc) - timedelta(hours=1)).strftime(
+                "%Y-%m-%dT%H:%M:%S"
+            ),
             "endtime": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S"),
             "minmagnitude": 2.5,
-            "orderby": "time"
-        }
+            "orderby": "time",
+        },
     )
     if data is None:
         return []
@@ -68,17 +67,19 @@ def fetch_earthquakes():
     for feature in data["features"]:
         props = feature["properties"]
         coords = feature["geometry"]["coordinates"]
-        events.append({
-            "source": "USGS",
-            "event_type": "earthquake",
-            "title": props.get("title"),
-            "magnitude": props.get("mag"),
-            "location": props.get("place"),
-            "latitude": coords[1],
-            "longitude": coords[0],
-            "severity": "high" if props.get("mag", 0) >= 5.0 else "medium",
-            "timestamp": datetime.now(timezone.utc).isoformat()
-        })
+        events.append(
+            {
+                "source": "USGS",
+                "event_type": "earthquake",
+                "title": props.get("title"),
+                "magnitude": props.get("mag"),
+                "location": props.get("place"),
+                "latitude": coords[1],
+                "longitude": coords[0],
+                "severity": "high" if props.get("mag", 0) >= 5.0 else "medium",
+                "timestamp": datetime.now(timezone.utc).isoformat(),
+            }
+        )
     return events
 
 
@@ -88,8 +89,8 @@ def fetch_noaa_alerts():
         params={"status": "actual"},
         headers={
             "User-Agent": "cat-risk-pipeline (test@email.com)",
-            "Accept": "application/json"
-        }
+            "Accept": "application/json",
+        },
     )
     if data is None:
         return []
@@ -97,17 +98,19 @@ def fetch_noaa_alerts():
     events = []
     for feature in data["features"]:
         props = feature["properties"]
-        events.append({
-            "source": "NOAA",
-            "event_type": "weather_alert",
-            "title": props.get("headline"),
-            "magnitude": None,
-            "location": props.get("areaDesc"),
-            "latitude": None,
-            "longitude": None,
-            "severity": props.get("severity", "unknown").lower(),
-            "timestamp": datetime.now(timezone.utc).isoformat()
-        })
+        events.append(
+            {
+                "source": "NOAA",
+                "event_type": "weather_alert",
+                "title": props.get("headline"),
+                "magnitude": None,
+                "location": props.get("areaDesc"),
+                "latitude": None,
+                "longitude": None,
+                "severity": props.get("severity", "unknown").lower(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
+            }
+        )
     return events
 
 
@@ -117,33 +120,36 @@ def fetch_fema_disasters():
         params={
             "$top": 10,
             "$orderby": "declarationDate desc",
-            "$filter": f"declarationDate gt '{(datetime.now(timezone.utc) - timedelta(days=1)).strftime('%Y-%m-%d')}'"
+            "$filter": f"declarationDate gt '{(datetime.now(timezone.utc) - timedelta(days=1)).strftime('%Y-%m-%d')}'",
         },
         headers={
             "Accept": "application/json",
-            "User-Agent": "cat-risk-pipeline (test@email.com)"
-        }
+            "User-Agent": "cat-risk-pipeline (test@email.com)",
+        },
     )
     if data is None:
         return []
 
     events = []
     for disaster in data["DisasterDeclarationsSummaries"]:
-        events.append({
-            "source": "FEMA",
-            "event_type": "disaster_declaration",
-            "title": disaster.get("declarationTitle"),
-            "magnitude": None,
-            "location": disaster.get("state"),
-            "latitude": None,
-            "longitude": None,
-            "severity": "high",
-            "timestamp": datetime.now(timezone.utc).isoformat()
-        })
+        events.append(
+            {
+                "source": "FEMA",
+                "event_type": "disaster_declaration",
+                "title": disaster.get("declarationTitle"),
+                "magnitude": None,
+                "location": disaster.get("state"),
+                "latitude": None,
+                "longitude": None,
+                "severity": "high",
+                "timestamp": datetime.now(timezone.utc).isoformat(),
+            }
+        )
     return events
 
 
 # Entry point for GCP Cloud Function
+
 
 def main(request):
     """
