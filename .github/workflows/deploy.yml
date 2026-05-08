@@ -20,7 +20,6 @@ jobs:
         with:
           workload_identity_provider: 'projects/${{ secrets.GCP_PROJECT_NUMBER }}/locations/global/workloadIdentityPools/github-pool/providers/github-provider'
           service_account: 'pipeline-sa@${{ secrets.GCP_PROJECT_ID }}.iam.gserviceaccount.com'
-          token_format: 'access_token'
           create_credentials_file: true
           export_environment_variables: true
           
