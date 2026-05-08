@@ -36,6 +36,7 @@ jobs:
         working-directory: ./cat-risk-pipeline/terraform
         env:
           TF_VAR_project_id: ${{ secrets.TF_VAR_project_id }}
+          TF_VAR_bucket_name: ${{ secrets.TF_VAR_bucket_name }}
         run: terraform apply -auto-approve
 
       # DAGs stay manual as they are managed by Airflow/Composer storage
