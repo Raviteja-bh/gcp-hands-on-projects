@@ -1,0 +1,39 @@
+name: "CD: Professional Deployment"
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  id-token: write # Mandatory for WIF
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # SECURE AUTH: Replaces the old GCP_SA_KEY method
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: 'projects/${{ secrets.GCP_PROJECT_NUMBER }}/locations/global/workloadIdentityPools/github-pool/providers/github-provider'
+          service_account: 'pipeline-sa@${{ secrets.GCP_PROJECT_ID }}.iam.gserviceaccount.com'
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Init
+        run: terraform init
+
+      # Terraform now handles the Cloud Function & Dataflow Job deployment automatically
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
+
+      # DAGs stay manual as they are managed by Airflow/Composer storage
+      - name: Sync Composer DAGs
+        run: |
+          export DAGS_BUCKET=$(gcloud composer environments describe cat-risk-composer \
+            --location=us-central1 --format="value(config.dagGcsPrefix)")
+          gsutil -m cp cat-risk-pipeline/dags/*.py $DAGS_BUCKET/

@@ -1,0 +1,34 @@
+name: "CI: Validate & Test"
+
+on:
+  push:
+    branches: ["*"]
+  pull_request:
+    branches: [main]
+
+jobs:
+  quality-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+          cache: 'pip'
+
+      - name: Install Dependencies
+        run: |
+          pip install flake8 pytest apache-beam[gcp] requests google-cloud-pubsub
+
+      - name: Lint Code
+        run: flake8 . --count --max-line-length=100 --statistics
+
+      - name: Run Tests
+        run: pytest cat-risk-pipeline/tests/ -v
+
+      - name: Terraform Validate
+        run: |
+          terraform init -backend=false
+          terraform validate
