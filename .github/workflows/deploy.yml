@@ -30,7 +30,9 @@ jobs:
 
       # Terraform now handles the Cloud Function & Dataflow Job deployment automatically
       - name: Terraform Apply
-        working-directory: ./cat-risk-pipeline/terraform
+        working-directory: ./terraform
+        env:
+          TF_VAR_project_id: ${{ secrets.TF_VAR_project_id }}
         run: terraform apply -auto-approve
 
       # DAGs stay manual as they are managed by Airflow/Composer storage

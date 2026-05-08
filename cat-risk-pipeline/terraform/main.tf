@@ -2,7 +2,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "cat-risk-pipeline-bucket-2026-rockster"
+    bucket = "cat-risk-pipeline-bucket-2026"
     prefix = "terraform/state"
   }
 }
