@@ -33,7 +33,7 @@ jobs:
 
       # Terraform now handles the Cloud Function & Dataflow Job deployment automatically
       - name: Terraform Apply
-        working-directory: ./terraform
+        working-directory: ./cat-risk-pipeline/terraform
         env:
           TF_VAR_project_id: ${{ secrets.TF_VAR_project_id }}
         run: terraform apply -auto-approve
