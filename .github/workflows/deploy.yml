@@ -29,8 +29,7 @@ jobs:
 
       - name: Terraform Init
         working-directory: ./cat-risk-pipeline/terraform
-        run: terraform init \
-               -backend-config="access_token=$(gcloud auth print-access-token)"
+        run: terraform init -backend-config="access_token=$(gcloud auth print-access-token)"
 
       # Terraform now handles the Cloud Function & Dataflow Job deployment automatically
       - name: Terraform Apply
