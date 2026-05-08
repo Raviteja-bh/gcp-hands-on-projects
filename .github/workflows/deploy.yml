@@ -37,6 +37,7 @@ jobs:
         env:
           TF_VAR_project_id: ${{ secrets.TF_VAR_project_id }}
           TF_VAR_bucket_name: ${{ secrets.TF_VAR_bucket_name }}
+          TF_VAR_pipeline_sa_email: ${{ secrets.TF_VAR_pipeline_sa_email }}
         run: terraform apply -auto-approve
 
       # DAGs stay manual as they are managed by Airflow/Composer storage
