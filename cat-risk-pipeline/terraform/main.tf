@@ -1,5 +1,12 @@
 # terraform/main.tf
 
+terraform {
+  backend "gcs" {
+    bucket = "cat-risk-pipeline-bucket-2026-rockster"
+    prefix = "terraform/state"
+  }
+}
+
 #provider
 terraform {
   required_providers {
