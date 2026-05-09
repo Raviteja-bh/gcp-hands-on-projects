@@ -49,7 +49,7 @@ jobs:
         run: pytest cat-risk-pipeline/tests/ -v --import-mode=importlib
 
       - name: Terraform Validate
+        working-directory: ./cat-risk-pipeline/terraform
         run: |
-          cd terraform
           terraform init -backend=false
           terraform validate
