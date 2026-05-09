@@ -27,7 +27,7 @@ jobs:
         uses: 'google-github-actions/auth@v2'
         with:
           # You will need to paste your specific provider string here
-          workload_identity_provider: 'projects/115741126538/locations/global/workloadIdentityPools/github-pool'
+          workload_identity_provider: 'projects/115741126538/locations/global/workloadIdentityPools/github-pool/providers/github-provider'
           service_account: 'pipeline-sa@cat-risk-pipeline-2026.iam.gserviceaccount.com'
 
       - name: Install Dependencies
