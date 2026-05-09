@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [main]
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   quality-check:
     runs-on: ubuntu-latest
@@ -15,8 +19,16 @@ jobs:
       - name: Set up Python 3.10
         uses: actions/setup-python@v5
         with:
-          python-version: "3.10"
+          python-version: "3.11"
           cache: 'pip'
+
+      - id: 'auth'
+        name: 'Authenticate to Google Cloud'
+        uses: 'google-github-actions/auth@v2'
+        with:
+          # You will need to paste your specific provider string here
+          workload_identity_provider: 'projects/115741126538/locations/global/workloadIdentityPools/github-pool'
+          service_account: 'pipeline-sa@cat-risk-pipeline-2026.iam.gserviceaccount.com'
 
       - name: Install Dependencies
         run: |
@@ -34,9 +46,10 @@ jobs:
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=100 --statistics
 
       - name: Run Tests
-        run: pytest cat-risk-pipeline/tests/ -v
+        run: pytest cat-risk-pipeline/tests/ -v --import-mode=importlib
 
       - name: Terraform Validate
         run: |
+          cd terraform
           terraform init -backend=false
           terraform validate
