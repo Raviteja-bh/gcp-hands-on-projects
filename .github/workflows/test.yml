@@ -22,6 +22,11 @@ jobs:
           python-version: "3.11"
           cache: 'pip'
 
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.7.0" # Or your preferred version
+
       - id: 'auth'
         name: 'Authenticate to Google Cloud'
         uses: 'google-github-actions/auth@v2'
