@@ -10,21 +10,21 @@ This project demonstrates building a production-grade streaming architecture on 
 
 ---
 
-## Architecture
+## Architecture Diagram
 
-Public APIs (NOAA, USGS, FEMA)
-↓
-Cloud Functions → Cloud Scheduler
-↓
-Cloud Pub/Sub
-↓
-Cloud Dataflow (Apache Beam)
-↓
-BigQuery (partitioned & clustered)
-↓
-Looker Studio Dashboard
-Orchestrated by: Cloud Composer (Airflow)
-
+```mermaid
+graph TD
+    A[Public APIs: NOAA, USGS, FEMA] --> B[Cloud Functions]
+    B --> C[Cloud Pub/Sub]
+    C --> D[Cloud Dataflow: Apache Beam]
+    D --> E[(BigQuery: Partitioned & Clustered)]
+    E --> F[Looker Studio Dashboard]
+    
+    subgraph Orchestration
+    G[Cloud Composer: Airflow] -.-> B
+    G -.-> D
+    end
+```
 ---
 
 ## Tech Stack
