@@ -1,4 +1,4 @@
-# Data Engineering Projects
+# GCP-DE Hands Projects
 
 A collection of hands-on projects exploring Google Cloud Platform data engineering tools and patterns.
 
