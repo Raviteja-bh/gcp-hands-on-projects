@@ -48,30 +48,6 @@ Orchestrated by: Cloud Composer (Airflow)
 
 ---
 
-## Project Structure
-
-cat-risk-pipeline/
-├── ingestion/
-│   ├── main.py              # Cloud Function entry point
-│   └── requirements.txt
-├── pipeline/
-│   └── dataflow_pipeline.py # Apache Beam streaming pipeline
-├── bigquery/
-│   ├── schema_events.json   # Table schema definition
-│   └── queries/             # SQL analytics queries
-├── terraform/
-│   ├── main.tf              # GCP resource definitions
-│   ├── variables.tf
-│   └── outputs.tf
-├── dags/
-│   └── cat_risk_pipeline_dag.py  # Airflow orchestration
-└── tests/
-├── test_apis.py
-├── test_pubsub.py
-└── test_pipeline.py
-
----
-
 ## Key Features
 
 ### Real-Time Stream Processing
