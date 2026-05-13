@@ -14,23 +14,25 @@ This project demonstrates building a production-grade streaming architecture on 
 
 ```mermaid
 graph TD
+    %% Main Pipeline Flow
     A[Public APIs: NOAA, USGS, FEMA] --> B[Cloud Functions]
+    S[Cloud Scheduler] --> B
     B --> C[Cloud Pub/Sub]
     C --> D[Cloud Dataflow: Apache Beam]
     D --> E[(BigQuery: Partitioned & Clustered)]
     E --> F[Looker Studio Dashboard]
-    
-    subgraph Orchestration_Layer [Management & Control Plane]
-    S[Cloud Scheduler]
-    G[Cloud Composer: Airflow]
-    end
 
-    %% Logic Flow
-    S -->|Triggers| B
-    G -.->|Manages| B
-    G -.->|Monages| C
-    G -.->|Orchestrates| D
-    G -.->|Queries/Checks| E
+    %% The Orchestration Brain
+    O{Cloud Composer: Orchestration}
+
+    %% Direct Control Lines to Every Step
+    O -.-> A
+    O -.-> S
+    O -.-> B
+    O -.-> C
+    O -.-> D
+    O -.-> E
+    O -.-> F
 ```
 ---
 
