@@ -20,17 +20,17 @@ graph TD
     D --> E[(BigQuery: Partitioned & Clustered)]
     E --> F[Looker Studio Dashboard]
     
-    subgraph Orchestration [Managed Orchestration & Infrastructure]
+    subgraph Orchestration_Layer [Management & Control Plane]
     S[Cloud Scheduler]
     G[Cloud Composer: Airflow]
     end
 
-    %% Orchestration Connections
-    G -.-> S
-    G -.-> B
-    G -.-> C
-    G -.-> D
-    G -.-> E
+    %% Logic Flow
+    S -->|Triggers| B
+    G -.->|Manages| B
+    G -.->|Monages| C
+    G -.->|Orchestrates| D
+    G -.->|Queries/Checks| E
 ```
 ---
 
