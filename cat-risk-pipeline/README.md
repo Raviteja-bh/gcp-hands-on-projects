@@ -10,21 +10,29 @@ This project demonstrates building a production-grade streaming architecture on 
 
 ---
 
-## Architecture
+## Architecture Diagram
 
-Public APIs (NOAA, USGS, FEMA)
-↓
-Cloud Functions → Cloud Scheduler
-↓
-Cloud Pub/Sub
-↓
-Cloud Dataflow (Apache Beam)
-↓
-BigQuery (partitioned & clustered)
-↓
-Looker Studio Dashboard
-Orchestrated by: Cloud Composer (Airflow)
+```mermaid
+graph TD
+    %% Main Pipeline Flow
+    A[Public APIs: NOAA, USGS, FEMA] --> B[Cloud Functions]
+    S[Cloud Scheduler] --> B
+    B --> C[Cloud Pub/Sub]
+    C --> D[Cloud Dataflow: Apache Beam]
+    D --> E[(BigQuery: Partitioned & Clustered)]
+    E --> F[Looker Studio Dashboard]
 
+    %% The Orchestration Brain
+    O{Cloud Composer: Orchestration}
+
+    %% Direct Control Lines to Every Step
+    O -.-> A
+    O -.-> S
+    O -.-> B
+    O -.-> C
+    O -.-> D
+    O -.-> E
+```
 ---
 
 ## Tech Stack
@@ -45,30 +53,6 @@ Orchestrated by: Cloud Composer (Airflow)
 
 **Visualization:**
 - Looker Studio — Live dashboard with 15-min auto-refresh
-
----
-
-## Project Structure
-
-cat-risk-pipeline/
-├── ingestion/
-│   ├── main.py              # Cloud Function entry point
-│   └── requirements.txt
-├── pipeline/
-│   └── dataflow_pipeline.py # Apache Beam streaming pipeline
-├── bigquery/
-│   ├── schema_events.json   # Table schema definition
-│   └── queries/             # SQL analytics queries
-├── terraform/
-│   ├── main.tf              # GCP resource definitions
-│   ├── variables.tf
-│   └── outputs.tf
-├── dags/
-│   └── cat_risk_pipeline_dag.py  # Airflow orchestration
-└── tests/
-├── test_apis.py
-├── test_pubsub.py
-└── test_pipeline.py
 
 ---
 
@@ -182,4 +166,3 @@ ORDER BY event_date DESC;
 ```
 
 More queries in `bigquery/queries/`
-

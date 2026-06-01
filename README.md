@@ -1,4 +1,4 @@
-# Data Engineering Projects
+# GCP-DE Hands-On Projects
 
 A collection of hands-on projects exploring Google Cloud Platform data engineering tools and patterns.
 
@@ -17,7 +17,7 @@ These projects are built to deepen practical experience with GCP data engineerin
 ## Projects
 | Project | Status | Description |
 |---|---|---|
-| Real-time Catastrophe Risk Intelligence Pipeline | In Progress | Pub/Sub → Dataflow → BigQuery |
+| Real-time Catastrophe Risk Intelligence Pipeline | Completed | Pub/Sub → Dataflow → BigQuery |
 | Data Quality Framework | Planned | Automated checks with Great Expectations |
 
 ## Find Me
