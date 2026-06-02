@@ -81,16 +81,135 @@ def save_to_json(data, filename):
     
     print(f"✓ Generated {len(data)} records → {filename}")
 
+
+def generate_claims(policies, num_claims=500):
+    """Generate fake claims - some referencing invalid policies"""
+    
+    claims = []
+    
+    # Get list of valid policy IDs from generated policies
+    valid_policy_ids = [p["policy_id"] for p in policies]
+    
+    for i in range(num_claims):
+        claim_id = f"CLM-{str(uuid.uuid4())[:8].upper()}"
+        
+        # 95% get valid policy_id, 5% get fake one (orphaned claim)
+        if random.random() < 0.95:
+            policy_id = random.choice(valid_policy_ids)  # Real policy
+        else:
+            policy_id = f"POL-INVALID{i}"               # Fake policy!
+
+        loss_amount = random.uniform(5000, 1000000)
+        
+        # ⚠️ 2% get negative loss amount
+        if random.random() < 0.02:
+            loss_amount = -loss_amount
+
+        paid_amount = random.uniform(0, abs(loss_amount) * 0.8)
+        
+        # ⚠️ 3% get paid > loss (business rule violation)
+        if random.random() < 0.03:
+            paid_amount = abs(loss_amount) * 1.5
+
+        claims.append({
+            "claim_id": claim_id,
+            "policy_id": policy_id,
+            "claim_number": f"CN-{2023000 + i}",
+            "loss_date": random_date(2023, 2025),
+            "reported_date": random_date(2023, 2025),
+            "loss_amount": round(loss_amount, 2),
+            "paid_amount": round(paid_amount, 2),
+            "reserve_amount": round(abs(loss_amount) - paid_amount, 2),
+            "claim_status": random.choice(["Open", "Closed", "Pending", "Settled"]),
+            "peril_type": random.choice(PERIL_TYPES),
+            "created_at": datetime.now().isoformat(),
+        })
+
+    return claims
+
+def generate_treaties(num_records=50):
+    """Generate reinsurance treaties with some business rule violations"""
+    
+    treaties = []
+
+    for i in range(num_records):
+        treaty_id = f"TRT-{str(uuid.uuid4())[:8].upper()}"
+
+        retention = random.uniform(100000, 5000000)
+        limit = random.uniform(10000000, 50000000)
+
+        # ⚠️ 5% get retention > limit (business rule violation)
+        # retention should ALWAYS be less than limit
+        if random.random() < 0.05:
+            retention, limit = limit, retention  # Swap them!
+
+        commission = random.uniform(0.05, 0.35)
+
+        # ⚠️ 2% get commission > 1 (over 100% - impossible!)
+        if random.random() < 0.02:
+            commission = random.uniform(1.1, 2.0)
+
+        treaties.append({
+            "treaty_id": treaty_id,
+            "treaty_name": f"Treaty-{2023}-{i:03d}",
+            "treaty_type": random.choice(["Quota Share", "Surplus", 
+                                          "Excess of Loss", "Stop Loss", 
+                                          "Catastrophe XL"]),
+            "effective_date": random_date(2023, 2024),
+            "expiration_date": random_date(2025, 2026),
+            "retention_amount": round(retention, 2),
+            "limit_amount": round(limit, 2),
+            "ceding_commission": round(commission, 4),
+            "territory": random.choice(["North America", "Europe", 
+                                        "Asia Pacific", "Global"]),
+            "created_at": datetime.now().isoformat(),
+        })
+
+    return treaties
+
+def generate_exposures(num_records=100):
+    """Generate geographic exposure data"""
+    
+    exposures = []
+
+    for i in range(num_records):
+        exposure_id = f"EXP-{str(uuid.uuid4())[:8].upper()}"
+        
+        tiv = random.uniform(10000000, 500000000)  # Total Insured Value
+        
+        # ⚠️ 3% get negative TIV
+        if random.random() < 0.03:
+            tiv = -tiv
+
+        num_policies = random.randint(10, 1000)
+        avg_premium = abs(tiv) / num_policies * random.uniform(0.01, 0.05)
+
+        exposures.append({
+            "exposure_id": exposure_id,
+            "region_code": random.choice(REGION_CODES),
+            "peril_type": random.choice(PERIL_TYPES),
+            "total_insured_value": round(tiv, 2),
+            "number_of_policies": num_policies,
+            "average_premium": round(avg_premium, 2),
+            "as_of_date": random_date(2024, 2025),
+            "created_at": datetime.now().isoformat(),
+        })
+
+    return exposures
+
 if __name__ == "__main__":
-    # This block only runs when you directly run this file
-    # NOT when another file imports it
-    
     print("Generating synthetic reinsurance data...\n")
-    
-    # Generate data
+
+    # Generate all datasets
     policies = generate_policies(1000)
-    
-    # Save to JSON
+    claims = generate_claims(policies, 500)   # Needs policies for valid IDs
+    treaties = generate_treaties(50)
+    exposures = generate_exposures(100)
+
+    # Save all to JSON
     save_to_json(policies, "data_generator/policies.json")
-    
+    save_to_json(claims, "data_generator/claims.json")
+    save_to_json(treaties, "data_generator/treaties.json")
+    save_to_json(exposures, "data_generator/exposures.json")
+
     print("\nDone!")
