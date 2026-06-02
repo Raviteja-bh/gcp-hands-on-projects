@@ -13,3 +13,5 @@ __pycache__/
 *.pyc
 .env
 venv/
+*.json
+gx/uncommitted/
