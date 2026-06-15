@@ -23,6 +23,7 @@ graph TD
     style E fill:#0F9D58,stroke:#333,stroke-width:2px,color:#fff
     style F fill:#DB4437,stroke:#333,stroke-width:2px,color:#fff
     style G fill:#F4B400,stroke:#333,stroke-width:2px,color:#fff
+```
 
 Data Flow Breakdown
 Ingestion Trigger: A user or automated process uploads a raw JSON/CSV data file into the landing-bucket via Cloud Shell or API.
